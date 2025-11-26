@@ -210,9 +210,18 @@ The repository includes a GitHub Actions workflow that automatically builds and 
 
 2. Push to `master` branch - images will be built and pushed automatically
 
+### Multi-Platform Support
+
+Images are built for both **linux/amd64** and **linux/arm64** architectures, ensuring compatibility with:
+- Intel Macs (amd64)
+- Apple Silicon Macs (M1/M2/M3) (arm64)
+- Linux servers (both architectures)
+
+Kubernetes will automatically select the correct image architecture for each node.
+
 Images will be available at:
-- `pavelzagalsky/gcp-access-visualizer-backend:latest`
-- `pavelzagalsky/gcp-access-visualizer-frontend:latest`
+- `pavelzagalsky/gcp-access-visualizer-backend:latest` (multi-platform)
+- `pavelzagalsky/gcp-access-visualizer-frontend:latest` (multi-platform)
 
 ## Usage
 

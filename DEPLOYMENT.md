@@ -31,6 +31,17 @@ docker-compose up -d
 # Backend: http://localhost:8080
 ```
 
+### Building Locally for macOS
+
+If you want to build images locally for your Mac architecture:
+
+```bash
+# Build for your local platform (auto-detects Intel/Apple Silicon)
+./build-local.sh
+
+# Then update docker-compose.yml to use the local images
+```
+
 ### Stop Services
 
 ```bash
@@ -146,10 +157,18 @@ kubectl delete namespace gcp-visualizer
    - Go to Actions tab in GitHub
    - Watch the workflow build and push images
 
+### Multi-Platform Support
+
+Images are built for multiple platforms to support both Intel and Apple Silicon Macs:
+- **linux/amd64** - For Intel Macs and x86_64 systems
+- **linux/arm64** - For Apple Silicon (M1/M2/M3) Macs
+
+Kubernetes will automatically pull the correct architecture based on your node's platform. This ensures compatibility with macOS minikube on both Intel and Apple Silicon Macs.
+
 ### Image Tags
 
 Images are automatically tagged with:
-- `latest` - Latest build from master branch
+- `latest` - Latest build from master branch (multi-platform)
 - `master-<sha>` - Builds from master with commit SHA
 - `v*` - Semantic version tags (if you create tags)
 
