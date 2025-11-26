@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gcp-visualizer-backend
+  namespace: gcp-visualizer
+  labels:
+    app: gcp-visualizer-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gcp-visualizer-backend
+  template:
+    metadata:
+      labels:
+        app: gcp-visualizer-backend
+    spec:
+      serviceAccountName: gcp-visualizer-backend
+      containers:
+      - name: backend
+        image: pavelzagalsky/gcp-access-visualizer-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: GCP_PROJECT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: gcp-visualizer-config
+              key: GCP_PROJECT_ID
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: gcp-visualizer-config
+              key: PORT
+        - name: CORS_ALLOWED_ORIGINS
+          valueFrom:
+            configMapKeyRef:
+              name: gcp-visualizer-config
+              key: CORS_ALLOWED_ORIGINS
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /app/credentials.json
+        volumeMounts:
+        - name: credentials
+          mountPath: /app/credentials.json
+          subPath: credentials.json
+          readOnly: true
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+      volumes:
+      - name: credentials
+        secret:
+          secretName: gcp-visualizer-credentials
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gcp-visualizer-backend
+  namespace: gcp-visualizer
+

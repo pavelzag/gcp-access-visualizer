@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
+	"strings"
 
 	"gcp-access-visualizer/config"
 	"gcp-access-visualizer/internal/gcp"
@@ -35,8 +37,12 @@ func main() {
 	router := gin.Default()
 
 	// Configure CORS
+	corsOrigins := []string{"http://localhost:5173", "http://localhost:3000"}
+	if allowedOrigins := os.Getenv("CORS_ALLOWED_ORIGINS"); allowedOrigins != "" {
+		corsOrigins = strings.Split(allowedOrigins, ",")
+	}
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:3000"},
+		AllowOrigins:     corsOrigins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},

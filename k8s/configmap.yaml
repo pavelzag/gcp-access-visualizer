@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gcp-visualizer-config
+  namespace: gcp-visualizer
+data:
+  GCP_PROJECT_ID: "YOUR_PROJECT_ID"  # Replace with your GCP project ID
+  PORT: "8080"
+  CORS_ALLOWED_ORIGINS: "*"  # Adjust based on your ingress domain
+

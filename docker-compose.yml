@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gcp-visualizer-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
+      - PORT=8080
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json
+    volumes:
+      - ${GOOGLE_APPLICATION_CREDENTIALS:-./credentials.json}:/app/credentials.json:ro
+    restart: unless-stopped
+    networks:
+      - gcp-visualizer-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=/api
+    container_name: gcp-visualizer-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - gcp-visualizer-network
+
+networks:
+  gcp-visualizer-network:
+    driver: bridge
+

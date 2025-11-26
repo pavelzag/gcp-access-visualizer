@@ -129,6 +129,91 @@ npm run dev
 
 The frontend will be available at `http://localhost:5173`
 
+## Docker Deployment
+
+### Using Docker Compose
+
+The easiest way to run the application with Docker:
+
+```bash
+# Set your GCP project ID
+export GCP_PROJECT_ID=your-project-id
+export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account-key.json
+
+# Start both services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+The application will be available at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8080
+
+### Building Docker Images Manually
+
+```bash
+# Build backend
+cd backend
+docker build -t pavelzagalsky/gcp-access-visualizer-backend:latest .
+
+# Build frontend
+cd ../frontend
+docker build -t pavelzagalsky/gcp-access-visualizer-frontend:latest .
+```
+
+## Kubernetes Deployment (Minikube)
+
+### Prerequisites
+
+- Minikube installed and running
+- kubectl configured
+- Ingress addon enabled
+
+### Quick Deploy
+
+```bash
+cd k8s
+
+# 1. Configure your GCP project ID in configmap.yaml
+# 2. Create secret.yaml from secret.yaml.example with your service account key
+# 3. Run the deployment script
+./deploy.sh
+```
+
+### Manual Deployment
+
+See detailed instructions in [k8s/README.md](k8s/README.md)
+
+### Access the Application
+
+After deployment, add to `/etc/hosts`:
+```
+$(minikube ip) gcp-visualizer.local
+```
+
+Then access at: http://gcp-visualizer.local
+
+## CI/CD with GitHub Actions
+
+The repository includes a GitHub Actions workflow that automatically builds and pushes Docker images to Docker Hub on every push to `master` branch.
+
+### Setup
+
+1. Add Docker Hub credentials to GitHub Secrets:
+   - `DOCKER_USERNAME`: Your Docker Hub username
+   - `DOCKER_PASSWORD`: Your Docker Hub password or access token
+
+2. Push to `master` branch - images will be built and pushed automatically
+
+Images will be available at:
+- `pavelzagalsky/gcp-access-visualizer-backend:latest`
+- `pavelzagalsky/gcp-access-visualizer-frontend:latest`
+
 ## Usage
 
 1. **Network Graph View**: See all users and resources as nodes with access relationships as edges
@@ -168,6 +253,11 @@ npm run preview    # Preview production build
 - `GCP_PROJECT_ID` - Your GCP project ID (required)
 - `PORT` - Server port (default: 8080)
 - `GOOGLE_APPLICATION_CREDENTIALS` - Path to service account key JSON
+- `CORS_ALLOWED_ORIGINS` - Comma-separated list of allowed CORS origins (default: localhost URLs)
+
+### Frontend
+
+- `VITE_API_BASE_URL` - Backend API base URL (default: http://localhost:8080/api)
 
 ## Security Considerations
 
